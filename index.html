@@ -17,21 +17,36 @@
     </section>
     
 
-    <main id="id-quiz-start-page-wrapper" class="quiz-start-page-wrapper">
+    <main id="id-quiz-wrapper" class="quiz-wrapper">
       <div id="id-quiz-start-page-container" class="quiz-start-page-container">
         <h1>Coding Quiz Challenge</h1>
         <p>Try to answer the following code-related questions within the time limit.<br> Keep in mind that incorrect answers will penalize your socre/time<br> by ten seconds!</p>
-        <button id ="id-btn-start-quiz" class="btn">Start Quiz</button>
+        <button id ="id-btn-start-quiz" class="btn" data-btn="start">Start Quiz</button>
       </div>
+      <!-- quizPage -->
+      <div id="id-quiz-content" class="quiz-content"> 
+        <!-- quizPAgeQuestions -->
+        <div id="id-quiz-content-question" class="quiz-content-question"></div>
+        <!-- quizPageButtons -->
+        <div id="id-quiz-content-buttons-container" class="quiz-content-buttons-container"></div>
+      </div>
+      <div id="id-submit-page" class="submit-page">
+        <div id="id-submit-page-container"></div>
+      </div>
+
+      <!-- highScorePage -->
+      <div id="id-high-scores" class="high-scores">
+        <!-- highScoreLists -->
+        <!-- highScoreButtons -->
+        <div id="id-high-scores-buttons"></div>
+      </div>
+      <div id="id-user-answer" class="user-answer"></div>
     </main>
 
-    </main>
-    
-
-	
 	
   
 
     <script src="./assets/css/script.js"></script>
   </body>
 </html>
+

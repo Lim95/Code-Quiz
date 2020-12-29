@@ -1,277 +1,260 @@
-var playTime = document.querySelector('#id-play-time');
-var quizWrapper = document.querySelector('#id-quiz-start-page-wrapper');
-var quizStartPage = document.querySelector('#id-quiz-start-page-container');
-var startBtn = document.querySelector('#id-btn-start-quiz');
-var QUESTIONS = 4;
-var ANSWERS = 0;
-var questionsBank = [
-  ["paranthesis", "quotes", "curly brackets", "square brackets", "The condition in an if / else statement is enclosed with _____."],
-  ["numbers", "strings", "booleans", "alerts", "Commonly used data types DO Not Include:"],
-  ["paranthesis", "quotes", "curly brackets", "square brackets", "The condition in an if / else statement is enclosed with _____."],
-  ["numbers", "strings", "booleans", "alerts", "Commonly used data types DO Not Include:"],
-  ["paranthesis", "quotes", "curly brackets", "square brackets", "The condition in an if / else statement is enclosed with _____."],
-  ["numbers", "strings", "booleans", "alerts", "Commonly used data types DO Not Include:"],
-  ["paranthesis", "quotes", "curly brackets", "square brackets", "The condition in an if / else statement is enclosed with _____."],
-  ["numbers", "strings", "booleans", "alerts", "Commonly used data types DO Not Include:"],
-  ["paranthesis", "quotes", "curly brackets", "square brackets", "The condition in an if / else statement is enclosed with _____."],
-  ["numbers", "strings", "booleans", "alerts", "Commonly used data types DO Not Include:"]
-];
+var quizWrapper = document.querySelector("#id-quiz-wrapper");
+var startBtn = document.querySelector("#id-btn-start-quiz");
+var startPage = document.querySelector("#id-quiz-start-page-container");
+var quizPage = document.querySelector("#id-quiz-content");
+var quizPageQuestions = document.querySelector("#id-quiz-content-question");
+var quizPageButtons = document.querySelector("#id-quiz-content-buttons-container");
+var userAnswerResult = document.querySelector("#id-user-answer");
+var submitPage = document.querySelector("#id-submit-page");
+var submitPageContainer = document.querySelector("#id-submit-page-container");
+var highScorePage = document.querySelector("#id-high-scores");
+var userHighScore = document.querySelector("#id-play-score");
+var highScoreButtons = document.querySelector("#id-high-scores-buttons");
+var playTime = document.querySelector("#id-play-time");
+const START = "start";
+const USERANSWERS = "userAnswers";
+const SUBMIT = "submit";
+const HIGHSCORES = "viewHighScores";
+const GOBACK = "goBack";
+const CLRHIGHSCORES = "clrHighScores";
+const CORRECT = "Correct!";
+const WRONG = "Wrong!";
+const BTNCLICKED = "BUTTON CLICKED!";
+var questions = {
+  question1: {question: '1The condition in an if / else statement is enclosed with _____.', ans1: 'paranthesis', ans2: 'square brackets', ans3: 'quotes', ans4: 'curly brackets', answer: 'paranthesis'},
+  question2: {question: '2Commonly used data types DO Not Include:', ans1: 'numbers', ans2: 'strings', ans3: 'booleans', ans4: 'alerts', answer: 'numbers'},
+  question3: {question: '3The condition in an if / else statement is enclosed with _____.', ans1: 'paranthesis', ans2: 'square brackets', ans3: 'quotes', ans4: 'curly brackets', answer: 'paranthesis'},
+  question4: {question: '4Commonly used data types DO Not Include:', ans1: 'numbers', ans2: 'strings', ans3: 'booleans', ans4: 'alerts', answer: 'numbers'},
+  question5: {question: '5The condition in an if / else statement is enclosed with _____.', ans1: 'paranthesis', ans2: 'square brackets', ans3: 'quotes', ans4: 'curly brackets', answer: 'paranthesis'},
+  question6: {question: '6Commonly used data types DO Not Include:', ans1: 'numbers', ans2: 'strings', ans3: 'booleans', ans4: 'alerts', answer: 'numbers'},
+  question7: {question: '7The condition in an if / else statement is enclosed with _____.', ans1: 'paranthesis', ans2: 'square brackets', ans3: 'quotes', ans4: 'curly brackets', answer: 'paranthesis'},
+  question8: {question: '8Commonly used data types DO Not Include:', ans1: 'numbers', ans2: 'strings', ans3: 'booleans', ans4: 'alerts', answer: 'numbers'},
+  question9: {question: '9The condition in an if / else statement is enclosed with _____.', ans1: 'paranthesis', ans2: 'square brackets', ans3: 'quotes', ans4: 'curly brackets', answer: 'paranthesis'},
+  question10: {question: '10Commonly used data types DO Not Include:', ans1: 'numbers', ans2: 'strings', ans3: 'booleans', ans4: 'alerts', answer: 'numbers'}
+}
+var questionBank = [];
+for(var key in questions) {
+  questionBank.push(questions[key]);
+}
 
-// var createBtn = function(i, questionsNumber, randomQuestions) {
-
-//   btnItem.innerHTML = 
-//     i + ". " + questionsBank[questionsNumber][randomQuestions];
-
-//   quizContent.appendChild(btnItem);
-  // // print 4 random buttons
-  // for(var i = 1; i <= 4; i++) {
-  //   var randomAnswers = Math.floor(Math.random()*(questionsBank[questionsNumber].length-2)) + 1;
-  //   createBtn(i, questionsNumber, randomAnswers);
-  //   questionsBank[questionsNumber].splice(randomAnswers,1);
-  // }
-// };
 
 
+var userScore = 0;
+var questionNumber = 0;
+var userAnswerResultStatus = false;
+var startTime = 15; //in seconds
+const QUESTIONS = 4;
+const ANSWERS = 0;
+const USERINPUT = 0;
 
-function getQuestionPage(){
-  // get a random question
-  var questionNumber = Math.floor(Math.random()*questionsBank.length);
-  // get the answer to the random question
-  var questionAnswer = questionsBank[questionNumber][ANSWERS];
+var gameTimer = setInterval(function() {
+  if(startTime <= 0) {
+    clearInterval(gameTimer);
+    playTime.innerText = 0;
+    getSubmitPage();
+  }
+  playTime.innerText = startTime;
+  startTime--;
+  
 
-  // print question
-  var questionContainer = document.createElement("div");
-  questionContainer.className = "questions-container";
-  var randomQuestion = document.createElement("div");
-  randomQuestion.className = "questions";
-  randomQuestion.innerHTML =
-    "<h1 class='questions-items'>" + questionsBank[questionNumber][QUESTIONS] +"</h1>";
-  questionContainer.append(randomQuestion);
-  quizWrapper.append(questionContainer);
+}, 1000);
 
-  // print 4 random buttons
-  var tmpBank = questionsBank;
-  for(var i = 1; i <= 4; i++) {
-    var randomAnswers = Math.floor(Math.random()*((tmpBank[questionNumber].length-1)));
-    var btnItem = document.createElement("button");
-    btnItem.className = "btn-ans";
-    if(tmpBank[questionNumber][randomAnswers] === questionsBank[questionNumber][ANSWERS]){
-      btnItem.setAttribute("data-btn-ans","correct");
-    }
-    else {
-      btnItem.setAttribute("data-btn-ans", "wrong");
-    }
-    btnItem.innerHTML = 
-    i + ". " + questionsBank[questionNumber][randomAnswers];
-    questionContainer.appendChild(btnItem);
-    tmpBank.splice((questionNumber,randomAnswers),1);
-
+function removeAllChildNodes(parent) {
+  while(parent.firstChild) {
+    parent.removeChild(parent.firstChild);
   }
 };
 
-function startQuiz(){
-
-  quizStartPage.remove();
-  getQuestionPage();
-
-
+function clearPage(parent) {
+  if(parent.hasChildNodes()) {
+    parent.remove();
+  }
 };
-function checkAnswer(event){
-  var targetEl = event.target;
-  if (targetEl.matches(".btn-ans")) {
-    var userAnswer = targetEl.getAttribute("data-btn-ans");
 
-    if (userAnswer === "correct") {
+function getStartPage() {
+  removeAllChildNodes(quizWrapper);
+  questionNumber = 0;
+  userScore = 0;
+  startTime = 100; // in seconds
+  quizWrapper.append(startPage);
+};
+function getPages() {
 
-    }
-    else {
   
+  if (questionNumber < questionBank.length) {
+    startPage.remove(); 
+    getQuestionPage();
+  }
+  else {
+    quizPage.remove();
+    getSubmitPage();
+  }
+   
+};
+
+
+/** questions*********************************************************** */
+function getQuestionPage(){
+  // get a random question
+  
+  removeAllChildNodes(quizPageQuestions);
+  var question = document.createElement("h1");
+  question.className = "questions-items";
+  question.innerHTML = questionBank[questionNumber].question;
+  quizPageQuestions.append(question);
+
+  
+  var x, i = 1;
+  removeAllChildNodes(quizPageButtons);
+  for(x in questionBank[questionNumber]) {
+    if(x === 'ans1' ||x === 'ans2' ||x === 'ans3' ||x === 'ans4') {
+      var btnItem = document.createElement("button");
+      btnItem.className = "btn-ans";
+      btnItem.innerHTML = i + ". " +questionBank[questionNumber][x];
+      btnItem.setAttribute("data-btn-ans", questionBank[questionNumber][x]);
+      btnItem.setAttribute("data-btn", USERANSWERS);
+      quizPageButtons.appendChild(btnItem);
+      quizWrapper.append(quizPage);
+      btnItem.addEventListener("click",btnHandler);
+      i++;
     }
-    
-  } 
+  }
+
+  quizWrapper.insertBefore(quizPageButtons, quizWrapper.firstChild);
+  quizWrapper.insertBefore(quizPageQuestions, quizWrapper.firstChild);
+  
+};
+
+function checkAnswer(userAnswer) {
+  var result = false;
+  if(userAnswer === questionBank[questionNumber].answer){
+    result = true;
+    userScore++;
+  }
+  else {
+    result = false;
+    startTime -= 10; 
+  }
+  printResult(result);
 }
 
-quizStartPage.addEventListener('click',startQuiz);
-document.body.addEventListener('click', checkAnswer);
+/** questions*********************************************************** */
+function printResult(userAnswerStatus){
 
-// var btnArray = [];
-// var questionArray = [];
-// var questionNumber = 0;
-// var limit = questionsBank.length;
-// for (var i = 0; i < questionsBank.length; i++) {
-//   var question = document.createElement("div");
-//   question.className = "quiz-page";
-//   question.setAttribute("id", "quiz-page-id");
-
-//   var questionHeading = document.createElement("h1");
-//   questionHeading.setAttribute("id", "questionsHead");
-//   questionHeading.className = "questions-items";
-//   questionHeading.innerText = questionsBank[i][CONST_QUESTIONS];
-
-//   question.append(questionHeading);
+  removeAllChildNodes(userAnswerResult);
+  var userAnswerStatusContent = document.createElement("h3");
+  userAnswerStatusContent.className = "user-answer-status-content";
   
-//   for (var j = 1; j <= 4; j++) {
-//     var btnAnswers = document.createElement("button");
-//     btnAnswers.className = "btns";
-//     btnAnswers.setAttribute("id", j);
-//     btnAnswers.innerText = 
-//       j + ". " + questionsBank[i][j];
-//     question.append(btnAnswers);
-//   };
+  if(userAnswerStatus === true) {
+    userAnswerStatusContent.innerHTML = CORRECT;
+  }
+  else {  
+    userAnswerStatusContent.innerHTML = WRONG;
 
-//   questionArray.push(question);
-// };
+  }
+  userAnswerResult.append(userAnswerStatusContent);
+  questionNumber++;
+};
 
-// function nextQuestion(questionNumber) {
-//   if(questionNumber < limit){
-//     console.log(questionNumber);
-//     var tmpQues = document.getElementById("questionsHead");
-//     tmpQues.innerText = questionsBank[questionNumber][CONST_QUESTIONS];
-//     document.getElementsByClassName("questionsHead").innerText = tmpQues.innerText;
-//     for (var i = 1; i <= 4; i++) {
-//       var tmpBtn = document.getElementById(i);
-//       tmpBtn.innerText =
-//         i + ". " + questionsBank[questionNumber][i];
-//       document.getElementById(i).innerText = tmpBtn.innerText;
-//     }
-//     checkAnswer;
-//   }
-// }
-// function submitScore() {
-//   document.getElementById("quiz-page-id").remove();
+function getSubmitPage() {
+  
+  removeAllChildNodes(submitPageContainer);
+  removeAllChildNodes(submitPage);
+  removeAllChildNodes(quizWrapper);
+  
+  var submitPageHeading = document.createElement("h2");
+  submitPageHeading.innerHTML = "All done!";
 
-//   var submitDiv = document.createElement("div");
-//   submitDiv.className = "quiz-start-container";
+  
+  var submitPageInfo = document.createElement("p");
+  submitPageInfo.innerHTML = "Your final score is <span id='id-user-score'>"+String(userScore)+"</span>";
+  
+  var submitPageBoxContainer = document.createElement("form");
+  submitPageBoxContainer.className = "submit-page-box-container";
+  submitPageBoxContainer.setAttribute("id", "id-submit-page-box-container");
+  submitPageBoxContainer.innerHTML =
+    "Enter initials: "+
+    "<input type='text' id='userInitial'>" +
+    "<input type='submit' id='id-btn-submit' class='btn' value='submit' data-btn='submit'>";
+  
+  
 
-//   var submitHeading = document.createElement("h1");
-//   submitHeading.innerText = "All done!";
-
-//   var submitScoreText = document.createElement("p");
-//   submitScoreText.innerText = "Your final score is 22"
-
-//   var submitScoreBox = document.createElement("form");
-//   submitScoreBox.className = "score-box";
-//   submitScoreBox.innerHTML = 
-//     "<p>Enter initials: </p>" + 
-//     "<input type='text'></input>" + 
-//     "<button id='idBtnSubmit' class='btnSubmit' type='submit'>Submit</button>";
-
-//   document.getElementById("idBtnSubmit").addEventListener("submit", formSubmit);
-
-//   submitDiv.append(submitHeading);
-//   submitDiv.append(submitScoreText);
-//   submitDiv.append(submitScoreBox);
-//   quizContent.append(submitDiv);
-
-// }
-
-// function formSubmit() {
-//   console.log(1);
-// }
-
-// function checkAnswer() {
-//   if(questionNumber < limit){
-//     var userAnswer = this.innerText.slice(3);
-//     var questionAnswer = questionsBank[questionNumber][CONST_QUESTIONS_ANSWERS];
-
-//     questionNumber++;
-//     nextQuestion(questionNumber);
-
-//     if (userAnswer === questionAnswer) {
-//       console.log("you are right");
-//     }
-//     else {
-//       console.log("you are wrong");
-//     }
-//   }
-//   else {
-//     submitScore();
-//   }
-// }; 
+  submitPageContainer.append(submitPageHeading, submitPageInfo, submitPageBoxContainer);
+  quizWrapper.append(submitPageContainer);
 
 
-// /*********************************************************************************/
-// function startQuiz(){
-//   quizStartPage.remove();
-//   quizContent.append(questionArray[questionNumber]);
-
-//   var x = document.getElementsByClassName("btns");
-
-//   for(var i =0; i < 4; i++){
-//     x[i].addEventListener("click", checkAnswer);
-//   }
-// };
+  document.querySelector("#id-btn-submit").addEventListener("click", btnHandler);  
+};
 
 
-// // x.addEventListener("click", hello);
-// btnStart.addEventListener("click", startQuiz);
+function getHighScorePage() {
+  var userScoreInfo = document.querySelector("input[id='userInitial']").value;
+  console.dir(userScoreInfo);
+  removeAllChildNodes(highScoreButtons);
+  removeAllChildNodes(highScorePage);
+  removeAllChildNodes(quizWrapper);
+  
+  
 
-// var btnStart = document.querySelector("#btn-start-quiz");
-// var startPage = document.querySelector("#quiz-start-page");
-// var quizTime = document.querySelector("#play-time");
-// var quizContent = document.querySelector('#quiz-content');
-// var answerBtn = document.querySelector("#btn-questions-answers");
-// var QUIZ_START_TIME = 10;
-// var CONST_QUESTIONS = 0;
-// var CONST_QUESTIONS_ANSWERS = 1;
-// var questionsBank = [
-//   ["Commonly used data types DO Not Include:", "numbers", "strings", "booleans", "alerts"],
-//   ["The condition in an if / else statement is enclosed with _____.", "paranthesis", "quotes", "curly brackets", "square brackets"]
-// ];
-// for(var i=1;i<5;i++){
-//   var btnItem = document.createElement("button");
-//   btnItem.className = "btn";
-//   btnItem.setAttribute("id", JSON.stringify(i));  
-// }
+  var highScoresHeading = document.createElement("h2");
+  highScoresHeading.innerHTML = "High scores";
 
+  var highScoreLists = document.createElement("ol");
+  highScoreLists.setAttribute("id", "id-high-score-lists")
+  highScoreLists.innerText = userScoreInfo;
 
-// var startTime = function() {
-//   quizTime.innerHTML=1;
+  var goBackBtn = document.createElement("button");
+  goBackBtn.className = "btn";
+  goBackBtn.innerText = "Go back";
+  goBackBtn.setAttribute("data-btn",GOBACK);
 
-// };
-
-
-// var createQuestions = function(questionsNumber) {
-//   var questions = document.createElement("div");
-//   questions.className = "questions";
-//   questions.innerHTML = 
-//     "<h1 class='questions-items'>" + questionsBank[questionsNumber][CONST_QUESTIONS] +"</h1>";
-//   quizContent.appendChild(questions);
-// };
-
-// var createBtn = function(i, questionsNumber, randomQuestions) {
-
-//   btnItem.innerHTML = 
-//     i + ". " + questionsBank[questionsNumber][randomQuestions];
-
-//   quizContent.appendChild(btnItem);
-
-// };
-
-// var getQuestions = function() {
-//   var questionsNumber = Math.floor(Math.random()*questionsBank.length);
-//   createQuestions(questionsNumber);
+  var clearHighScoresBtn = document.createElement("button");
+  clearHighScoresBtn.className = "btn";
+  clearHighScoresBtn.innerText = "Clear high scores";
+  clearHighScoresBtn.setAttribute("data-btn",CLRHIGHSCORES);
 
 
-//   var questionsAnswer = questionsBank[questionsNumber][CONST_QUESTIONS_ANSWERS];
+  highScorePage.insertBefore(highScoresHeading, highScorePage.firstChild);
+  highScorePage.append(highScoreLists);
+  highScoreButtons.append(goBackBtn, clearHighScoresBtn);
+  highScorePage.append(highScoreButtons);
+  quizWrapper.append(highScorePage);
 
-//   // print random answer buttons
-//   for(var i = 1; i <= 4; i++) {
-//     var randomQuestions = Math.floor(Math.random()*(questionsBank[questionsNumber].length-2)) + 1;
-//     createBtn(i, questionsNumber, randomQuestions);
-//     questionsBank[questionsNumber].splice(randomQuestions,1);
-//   }
-// };
+  goBackBtn.addEventListener("click",btnHandler);
+  clearHighScoresBtn.addEventListener("click",btnHandler);
+};
+function clearHighScore() {
+  var highscores = document.querySelector("#id-high-score-lists");
+  removeAllChildNodes(highscores);
+};
+/** button handler*********************************************************** */
+function btnHandler(event) {
+    event.preventDefault();
+  var userBtnStatus = event.target.getAttribute("data-btn");
+  var userBtnAns = event.target.getAttribute("data-btn-ans");
+  switch(userBtnStatus) {
+    case START:
+      getPages();
+      break;
+    case USERANSWERS:
+      userAnswerResultStatus = checkAnswer(userBtnAns);
+      getPages();
+      break;
+    case SUBMIT:
+      getHighScorePage();
+      break;
+    case HIGHSCORES:
+      break;
+    case GOBACK:
+      getStartPage();
+      break;
+    case CLRHIGHSCORES:
+      clearHighScore();
+      break;
+    default :
+      break;                            
+  }
+}
+/** button handler*********************************************************** */
 
-// var checkAnswer = function() {
-//   console.log(btnItem.1);
-// };
-
-
-// var startQuiz = function() {
-//   startPage.remove();
-//   getQuestions();
-// };
-
-// btnStart.addEventListener("click", startQuiz);
-// btnItem.addEventListener("click", checkAnswer);
+startBtn.addEventListener("click",btnHandler);
