@@ -19,6 +19,17 @@ const CLRHIGHSCORES = "clrHighScores";
 const CORRECT = "Correct!";
 const WRONG = "Wrong!";
 const BTNCLICKED = "BUTTON CLICKED!";
+const QUESTIONS = 4;
+const ANSWERS = 0;
+const USERINPUT = 0;
+
+var userScore = 0;
+var questionNumber = 0;
+var userAnswerResultStatus = false;
+var startTime = 1500; //in seconds
+var highScoreArray = [];
+var gameTimer;
+
 var questions = {
   question1: {question: '1The condition in an if / else statement is enclosed with _____.', ans1: 'paranthesis', ans2: 'square brackets', ans3: 'quotes', ans4: 'curly brackets', answer: 'paranthesis'},
   question2: {question: '2Commonly used data types DO Not Include:', ans1: 'numbers', ans2: 'strings', ans3: 'booleans', ans4: 'alerts', answer: 'numbers'},
@@ -36,20 +47,6 @@ for(var key in questions) {
   questionBank.push(questions[key]);
 }
 
-
-
-var userScore = 0;
-var questionNumber = 0;
-var userAnswerResultStatus = false;
-var startTime = 1500; //in seconds
-var highScoreArray = [];
-
-const QUESTIONS = 4;
-const ANSWERS = 0;
-const USERINPUT = 0;
-
-var gameTimer;
-
 function removeAllChildNodes(parent) {
   while(parent.firstChild) {
     parent.removeChild(parent.firstChild);
@@ -62,6 +59,7 @@ function clearPage(parent) {
   }
 };
 
+/** start page *********************************************************** */
 function getStartPage() {
   
   removeAllChildNodes(startPage);
@@ -83,12 +81,12 @@ function getStartPage() {
   startPageButton.addEventListener("click", btnHandler);
   questionNumber = 0;
   userScore = 0;
-  startTime = 2; // in seconds
+  startTime = 100; // in seconds
 };
+/** start page *********************************************************** */
 
-
+/** get page *********************************************************** */
 function getPages() {
-
   if (questionNumber === 0) {
     gameTimer = setInterval(function() {
       if(startTime <= 0) {
@@ -98,7 +96,6 @@ function getPages() {
       startTime--;
     }, 1000);
   }
-
   // go through all the questions 
   if (questionNumber < questionBank.length) {
     
@@ -109,16 +106,14 @@ function getPages() {
 
     getSubmitPage();
   }
-   
 };
+/** get page *********************************************************** */
 
 
 /** questions*********************************************************** */
 function getQuestionPage(){
-  // get a random question
   removeAllChildNodes(startPage);
   removeAllChildNodes(quizPage);
-  //removeAllChildNodes(quizContainer);
 
   var quizPageContainer = document.createElement("div");
   quizPageContainer.className ="quiz-page-container";
@@ -134,9 +129,8 @@ function getQuestionPage(){
   question.innerHTML = questionBank[questionNumber].question;
   quizPageQuestions.append(question);
 
-  
+  // temp variables
   var x, i = 1;
-  //removeAllChildNodes(quizPageButtons);
   for(x in questionBank[questionNumber]) {
     if(x === 'ans1' ||x === 'ans2' ||x === 'ans3' ||x === 'ans4') {
       var btnItem = document.createElement("button");
@@ -148,16 +142,14 @@ function getQuestionPage(){
       btnItem.addEventListener("click",btnHandler);
       i++;
     }
-
-    //quiz wrapper
-       //quizpage
-             //quiz container
   }
   quizPageContainer.append(quizPageQuestions, quizPageButtons);
   quizPage.append(quizPageContainer);
   quizContainer.insertBefore(quizPage,quizContainer.firstChild);
 };
+/** questions*********************************************************** */
 
+/** check answer*********************************************************** */
 function checkAnswer(userAnswer) {
   var result = false;
   console.log("userAnswer: " +userAnswer);
@@ -174,8 +166,9 @@ function checkAnswer(userAnswer) {
   printResult(result);
   questionNumber++;
 }
+/** check answer*********************************************************** */
 
-/** questions*********************************************************** */
+/** print result*********************************************************** */
 function printResult(userAnswerStatus){
 
   removeAllChildNodes(userAnswerResult);
@@ -187,23 +180,21 @@ function printResult(userAnswerStatus){
   }
   else {  
     userAnswerStatusContent.innerHTML = WRONG;
-
   }
   userAnswerResult.append(userAnswerStatusContent);
   quizContainer.append(userAnswerResult);
 
 };
+/** print result*********************************************************** */
 
+/********submit page*********************************** */
 function getSubmitPage() {
+  //clear timer
   clearInterval(gameTimer);
   playTime.innerText = 0;
+
   removeAllChildNodes(quizPage);
   removeAllChildNodes(submitPage);
-
-
-  //removeAllChildNodes(submitPageContainer);
- // removeAllChildNodes(submitPage);
- // removeAllChildNodes(quizWrapper);
   
   var submitPageContainer = document.createElement("div");
   submitPageContainer.className = "submit-page-container";
@@ -211,7 +202,6 @@ function getSubmitPage() {
   var submitPageHeading = document.createElement("h2");
   submitPageHeading.innerHTML = "All done!";
 
-  
   var submitPageInfo = document.createElement("p");
   submitPageInfo.innerHTML = "Your final score is <span id='id-user-score'>"+String(userScore)+"</span>";
   
@@ -222,84 +212,33 @@ function getSubmitPage() {
     "Enter initials: "+
     "<input type='text' id='userInitial'>" +
     "<input type='submit' id='id-btn-submit' class='btn' value='submit' data-btn='submit'>";
-  
-  
 
   submitPageContainer.append(submitPageHeading, submitPageInfo, submitPageBoxContainer);
   submitPage.append(submitPageContainer);
   quizContainer.insertBefore(submitPage,quizContainer.firstChild);
 
-
   document.querySelector("#id-btn-submit").addEventListener("click", btnHandler);  
 };
-
-function viewHighScore() {
-  clearInterval(gameTimer);
-  playTime.innerText = 0;
-  var highScoreData = loadHighScores();
-  
-  if(highScoreData) {
-    highScoreData.sort(compare);
-  }
-  
-  removeAllChildNodes(quizContainer);
-  removeAllChildNodes(highScorePage);
-
-  var highScorePageContainer = document.createElement("div");
-  highScorePageContainer.className = "high-score-page-container";
-
-  var highScoreButtons = document.createElement("div");
-  highScoreButtons.className = "high-score-buttons";  
-
-  var highScoresHeading = document.createElement("h2");
-  highScoresHeading.innerHTML = "High scores";
+/********submit page*********************************** */
 
 
-  var highScoreLists = document.createElement("ol");
-  highScoreLists.setAttribute("id", "id-high-score-lists")
-
-  for (var i =0; i < highScoreData.length; i++) {
-    var highScoreli = document.createElement("li");
-    highScoreli.innerHTML = highScoreData[i].userName + " - " +highScoreData[i].score;
-    highScoreLists.append(highScoreli);
-  }
-
-  var goBackBtn = document.createElement("button");
-  goBackBtn.className = "btn";
-  goBackBtn.innerText = "Go back";
-  goBackBtn.setAttribute("data-btn",GOBACK);
-
-  var clearHighScoresBtn = document.createElement("button");
-  clearHighScoresBtn.className =  "btn";
-  clearHighScoresBtn.innerText = "Clear high scores";
-  clearHighScoresBtn.setAttribute("data-btn",CLRHIGHSCORES);
-
-  highScorePageContainer.insertBefore(highScoresHeading, highScorePageContainer.firstChild);
-  highScorePageContainer.append(highScoreLists);
-  highScoreButtons.append(goBackBtn, clearHighScoresBtn);
-  highScorePageContainer.append(highScoreButtons);
-  highScorePage.append(highScorePageContainer);
-  quizContainer.append(highScorePage);
-
-  goBackBtn.addEventListener("click",btnHandler);
-  clearHighScoresBtn.addEventListener("click",btnHandler);
-}
-
-function getHighScorePage() {
+/********high score page************************************ */
+function getHighScorePage(userView) {
+  // clear timer
   clearInterval(gameTimer);
   playTime.innerText = 0;
 
-  var userScoreInfo = document.querySelector("input[id='userInitial']").value;
-
-  var userDataObj = {
-    userName: userScoreInfo,
-    score: userScore
-  };
-
-
-
-  highScoreArray.push(userDataObj);
-  saveHighScores();
+  // error catcher - empty userScoreInfo
+  console.log(userView);
+  if(!userView) {
+    var userScoreInfo = document.querySelector("input[id='userInitial']").value;
+    var userDataObj = {
+      userName: userScoreInfo,
+      score: userScore
+    };
+    highScoreArray.push(userDataObj);
+    saveHighScores();
+  }
 
   var highScoreData = loadHighScores();
 
@@ -309,7 +248,6 @@ function getHighScorePage() {
 
   removeAllChildNodes(quizContainer);
   removeAllChildNodes(highScorePage);
-
   
   var highScorePageContainer = document.createElement("div");
   highScorePageContainer.className = "high-score-page-container";
@@ -339,9 +277,6 @@ function getHighScorePage() {
   clearHighScoresBtn.className =  "btn";
   clearHighScoresBtn.innerText = "Clear high scores";
   clearHighScoresBtn.setAttribute("data-btn",CLRHIGHSCORES);
-
-
-  
 
   highScorePageContainer.insertBefore(highScoresHeading, highScorePageContainer.firstChild);
   highScorePageContainer.append(highScoreLists);
@@ -353,16 +288,22 @@ function getHighScorePage() {
   goBackBtn.addEventListener("click",btnHandler);
   clearHighScoresBtn.addEventListener("click",btnHandler);
 };
+/********high score page************************************ */
+
+/********clear high score*********************************** */
 function clearHighScore() {
   localStorage.clear();
   var highscores = document.querySelector("#id-high-score-lists");
   removeAllChildNodes(highscores);
 };
+/********clear high score*********************************** */
+
 /** button handler*********************************************************** */
 function btnHandler(event) {
-    event.preventDefault();
+  event.preventDefault();
   var userBtnStatus = event.target.getAttribute("data-btn");
   var userBtnAns = event.target.getAttribute("data-btn-ans");
+  var userView = event.target.getAttribute("data-view");
   switch(userBtnStatus) {
     case START:
       getPages();
@@ -376,7 +317,7 @@ function btnHandler(event) {
       getHighScorePage();
       break;
     case HIGHSCORES:
-      viewHighScore();
+      getHighScorePage(userView);
       break;
     case GOBACK:
       getStartPage();
@@ -390,14 +331,15 @@ function btnHandler(event) {
 }
 /** button handler*********************************************************** */
 
-
-
 /******save high scores****************************** */
 function saveHighScores() {
   localStorage.setItem("highScores", JSON.stringify(highScoreArray));
   console.log("saved");
 };
+/******save high scores****************************** */
 
+
+/******load high scores****************************** */
 function loadHighScores() {
   var savedHighScores = localStorage.getItem("highScores");
   if(!savedHighScores) {
@@ -419,8 +361,11 @@ function compare(a,b) {
   }
   return result;
 }
+/******load high scores****************************** */
 
 
 // load the screen;
 window.onload = getStartPage();
+
+// button event
 viewHighScoresBtn.addEventListener("click", btnHandler)

@@ -4,15 +4,12 @@
   box-sizing: border-box;
 } 
 
-
-
 body {
   font-family: sans-serif;
   background-color: black;
   color: white;
 }
 
-/********************/
 .header-wrapper {
   display: flex;
   justify-content: center;
@@ -28,9 +25,6 @@ body {
 
 }
 
-/********************/
-
-/*****start page**********/
 .start-page, .quiz-content{
   display: flex;
   width: 60%;
@@ -38,7 +32,6 @@ body {
   align-items: center;
   margin: 20px auto;
 }
-/**********************/
 
 .quiz-content, .quiz-content-buttons{
   display: flex;
@@ -54,6 +47,12 @@ body {
   width: 60%;
   margin: 20px auto;
   justify-content: flex-start;
+}
+.submit-page, .high-scores {
+  display: flex;
+  justify-content: center;
+  width: 60%;
+  margin: 20px auto;
 }
 
 .btn, .btn-ans {
@@ -73,13 +72,6 @@ body {
 }
 .btn:hover, .btn-ans:hover {
   background-color: orange;
-}
-
-.submit-page, .high-scores {
-  display: flex;
-  justify-content: center;
-  width: 60%;
-  margin: 20px auto;
 }
 
 .header-button {
