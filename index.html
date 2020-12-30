@@ -11,36 +11,24 @@
 
     <section class="header-wrapper">
       <section class="header-container">
-        <a class="header-item">View high scores</a>
+        <button class="header-button" id="id-header-button" data-btn="viewHighScores" >View high scores</button>
         <p class="header-item">Time: <span id="id-play-time">0</span></p>
       </section>
     </section>
     
 
     <main id="id-quiz-wrapper" class="quiz-wrapper">
-      <div id="id-quiz-start-page-container" class="quiz-start-page-container">
-        <h1>Coding Quiz Challenge</h1>
-        <p>Try to answer the following code-related questions within the time limit.<br> Keep in mind that incorrect answers will penalize your socre/time<br> by ten seconds!</p>
-        <button id ="id-btn-start-quiz" class="btn" data-btn="start">Start Quiz</button>
-      </div>
-      <!-- quizPage -->
-      <div id="id-quiz-content" class="quiz-content"> 
-        <!-- quizPAgeQuestions -->
-        <div id="id-quiz-content-question" class="quiz-content-question"></div>
-        <!-- quizPageButtons -->
-        <div id="id-quiz-content-buttons-container" class="quiz-content-buttons-container"></div>
-      </div>
-      <div id="id-submit-page" class="submit-page">
-        <div id="id-submit-page-container"></div>
-      </div>
+      <div id="id-quiz-container" class="quiz-container">
+        <div id="id-start-page" class="start-page"></div>
 
-      <!-- highScorePage -->
-      <div id="id-high-scores" class="high-scores">
-        <!-- highScoreLists -->
-        <!-- highScoreButtons -->
-        <div id="id-high-scores-buttons"></div>
+        <div id="id-quiz-content" class="quiz-content"></div>
+        
+        <div id="id-submit-page" class="submit-page"></div>
+
+        <div id="id-high-scores" class="high-scores"></div>
+        
+        <div id="id-user-answer" class="user-answer"></div>
       </div>
-      <div id="id-user-answer" class="user-answer"></div>
     </main>
 
 	

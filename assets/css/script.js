@@ -1,16 +1,15 @@
 var quizWrapper = document.querySelector("#id-quiz-wrapper");
+var quizContainer = document.querySelector("#id-quiz-container");
 var startBtn = document.querySelector("#id-btn-start-quiz");
-var startPage = document.querySelector("#id-quiz-start-page-container");
+var startPage = document.querySelector("#id-start-page");
 var quizPage = document.querySelector("#id-quiz-content");
-var quizPageQuestions = document.querySelector("#id-quiz-content-question");
-var quizPageButtons = document.querySelector("#id-quiz-content-buttons-container");
 var userAnswerResult = document.querySelector("#id-user-answer");
 var submitPage = document.querySelector("#id-submit-page");
-var submitPageContainer = document.querySelector("#id-submit-page-container");
 var highScorePage = document.querySelector("#id-high-scores");
 var userHighScore = document.querySelector("#id-play-score");
 var highScoreButtons = document.querySelector("#id-high-scores-buttons");
 var playTime = document.querySelector("#id-play-time");
+var viewHighScoresBtn = document.querySelector("#id-header-button");
 const START = "start";
 const USERANSWERS = "userAnswers";
 const SUBMIT = "submit";
@@ -42,22 +41,14 @@ for(var key in questions) {
 var userScore = 0;
 var questionNumber = 0;
 var userAnswerResultStatus = false;
-var startTime = 15; //in seconds
+var startTime = 1500; //in seconds
+var highScoreArray = [];
+
 const QUESTIONS = 4;
 const ANSWERS = 0;
 const USERINPUT = 0;
 
-var gameTimer = setInterval(function() {
-  if(startTime <= 0) {
-    clearInterval(gameTimer);
-    playTime.innerText = 0;
-    getSubmitPage();
-  }
-  playTime.innerText = startTime;
-  startTime--;
-  
-
-}, 1000);
+var gameTimer;
 
 function removeAllChildNodes(parent) {
   while(parent.firstChild) {
@@ -72,21 +63,50 @@ function clearPage(parent) {
 };
 
 function getStartPage() {
-  removeAllChildNodes(quizWrapper);
+  
+  removeAllChildNodes(startPage);
+  removeAllChildNodes(quizContainer);
+  
+  var startPageHeading = document.createElement("h1");
+  startPageHeading.innerText ="Coding Quiz Challenge";
+
+  var startPageText = document.createElement("p");
+  startPageText.innerText = "Try to answer the following code-related questions within the time limit. Keep in mind that incorrect answers will penalize your socre/time by ten seconds!";
+
+  var startPageButton = document.createElement("button");
+  startPageButton.className ="btn";
+  startPageButton.innerText ="Start Quiz";
+  startPageButton.setAttribute("data-btn", "start");
+
+  startPage.append(startPageHeading, startPageText, startPageButton);
+  quizContainer.append(startPage);
+  startPageButton.addEventListener("click", btnHandler);
   questionNumber = 0;
   userScore = 0;
-  startTime = 100; // in seconds
-  quizWrapper.append(startPage);
+  startTime = 2; // in seconds
 };
+
+
 function getPages() {
 
-  
+  if (questionNumber === 0) {
+    gameTimer = setInterval(function() {
+      if(startTime <= 0) {
+        getSubmitPage();
+      }
+      playTime.innerText = startTime;
+      startTime--;
+    }, 1000);
+  }
+
+  // go through all the questions 
   if (questionNumber < questionBank.length) {
-    startPage.remove(); 
+    
     getQuestionPage();
   }
+  // go to submit page if ran out of questions
   else {
-    quizPage.remove();
+
     getSubmitPage();
   }
    
@@ -96,8 +116,19 @@ function getPages() {
 /** questions*********************************************************** */
 function getQuestionPage(){
   // get a random question
+  removeAllChildNodes(startPage);
+  removeAllChildNodes(quizPage);
+  //removeAllChildNodes(quizContainer);
+
+  var quizPageContainer = document.createElement("div");
+  quizPageContainer.className ="quiz-page-container";
+
+  var quizPageQuestions = document.createElement("div");
+  quizPageQuestions.className = "quiz-content-question";
   
-  removeAllChildNodes(quizPageQuestions);
+  var quizPageButtons = document.createElement("div");
+  quizPageButtons.className = "quiz-content-buttons"
+
   var question = document.createElement("h1");
   question.className = "questions-items";
   question.innerHTML = questionBank[questionNumber].question;
@@ -105,7 +136,7 @@ function getQuestionPage(){
 
   
   var x, i = 1;
-  removeAllChildNodes(quizPageButtons);
+  //removeAllChildNodes(quizPageButtons);
   for(x in questionBank[questionNumber]) {
     if(x === 'ans1' ||x === 'ans2' ||x === 'ans3' ||x === 'ans4') {
       var btnItem = document.createElement("button");
@@ -114,19 +145,24 @@ function getQuestionPage(){
       btnItem.setAttribute("data-btn-ans", questionBank[questionNumber][x]);
       btnItem.setAttribute("data-btn", USERANSWERS);
       quizPageButtons.appendChild(btnItem);
-      quizWrapper.append(quizPage);
       btnItem.addEventListener("click",btnHandler);
       i++;
     }
-  }
 
-  quizWrapper.insertBefore(quizPageButtons, quizWrapper.firstChild);
-  quizWrapper.insertBefore(quizPageQuestions, quizWrapper.firstChild);
-  
+    //quiz wrapper
+       //quizpage
+             //quiz container
+  }
+  quizPageContainer.append(quizPageQuestions, quizPageButtons);
+  quizPage.append(quizPageContainer);
+  quizContainer.insertBefore(quizPage,quizContainer.firstChild);
 };
 
 function checkAnswer(userAnswer) {
   var result = false;
+  console.log("userAnswer: " +userAnswer);
+  console.log("answer: "+questionBank[questionNumber].answer);
+  console.log("questionNumber: "+ questionNumber);
   if(userAnswer === questionBank[questionNumber].answer){
     result = true;
     userScore++;
@@ -136,6 +172,7 @@ function checkAnswer(userAnswer) {
     startTime -= 10; 
   }
   printResult(result);
+  questionNumber++;
 }
 
 /** questions*********************************************************** */
@@ -153,15 +190,24 @@ function printResult(userAnswerStatus){
 
   }
   userAnswerResult.append(userAnswerStatusContent);
-  questionNumber++;
+  quizContainer.append(userAnswerResult);
+
 };
 
 function getSubmitPage() {
-  
-  removeAllChildNodes(submitPageContainer);
+  clearInterval(gameTimer);
+  playTime.innerText = 0;
+  removeAllChildNodes(quizPage);
   removeAllChildNodes(submitPage);
-  removeAllChildNodes(quizWrapper);
+
+
+  //removeAllChildNodes(submitPageContainer);
+ // removeAllChildNodes(submitPage);
+ // removeAllChildNodes(quizWrapper);
   
+  var submitPageContainer = document.createElement("div");
+  submitPageContainer.className = "submit-page-container";
+
   var submitPageHeading = document.createElement("h2");
   submitPageHeading.innerHTML = "All done!";
 
@@ -180,28 +226,43 @@ function getSubmitPage() {
   
 
   submitPageContainer.append(submitPageHeading, submitPageInfo, submitPageBoxContainer);
-  quizWrapper.append(submitPageContainer);
+  submitPage.append(submitPageContainer);
+  quizContainer.insertBefore(submitPage,quizContainer.firstChild);
 
 
   document.querySelector("#id-btn-submit").addEventListener("click", btnHandler);  
 };
 
-
-function getHighScorePage() {
-  var userScoreInfo = document.querySelector("input[id='userInitial']").value;
-  console.dir(userScoreInfo);
-  removeAllChildNodes(highScoreButtons);
+function viewHighScore() {
+  clearInterval(gameTimer);
+  playTime.innerText = 0;
+  var highScoreData = loadHighScores();
+  
+  if(highScoreData) {
+    highScoreData.sort(compare);
+  }
+  
+  removeAllChildNodes(quizContainer);
   removeAllChildNodes(highScorePage);
-  removeAllChildNodes(quizWrapper);
-  
-  
+
+  var highScorePageContainer = document.createElement("div");
+  highScorePageContainer.className = "high-score-page-container";
+
+  var highScoreButtons = document.createElement("div");
+  highScoreButtons.className = "high-score-buttons";  
 
   var highScoresHeading = document.createElement("h2");
   highScoresHeading.innerHTML = "High scores";
 
+
   var highScoreLists = document.createElement("ol");
   highScoreLists.setAttribute("id", "id-high-score-lists")
-  highScoreLists.innerText = userScoreInfo;
+
+  for (var i =0; i < highScoreData.length; i++) {
+    var highScoreli = document.createElement("li");
+    highScoreli.innerHTML = highScoreData[i].userName + " - " +highScoreData[i].score;
+    highScoreLists.append(highScoreli);
+  }
 
   var goBackBtn = document.createElement("button");
   goBackBtn.className = "btn";
@@ -209,21 +270,91 @@ function getHighScorePage() {
   goBackBtn.setAttribute("data-btn",GOBACK);
 
   var clearHighScoresBtn = document.createElement("button");
-  clearHighScoresBtn.className = "btn";
+  clearHighScoresBtn.className =  "btn";
+  clearHighScoresBtn.innerText = "Clear high scores";
+  clearHighScoresBtn.setAttribute("data-btn",CLRHIGHSCORES);
+
+  highScorePageContainer.insertBefore(highScoresHeading, highScorePageContainer.firstChild);
+  highScorePageContainer.append(highScoreLists);
+  highScoreButtons.append(goBackBtn, clearHighScoresBtn);
+  highScorePageContainer.append(highScoreButtons);
+  highScorePage.append(highScorePageContainer);
+  quizContainer.append(highScorePage);
+
+  goBackBtn.addEventListener("click",btnHandler);
+  clearHighScoresBtn.addEventListener("click",btnHandler);
+}
+
+function getHighScorePage() {
+  clearInterval(gameTimer);
+  playTime.innerText = 0;
+
+  var userScoreInfo = document.querySelector("input[id='userInitial']").value;
+
+  var userDataObj = {
+    userName: userScoreInfo,
+    score: userScore
+  };
+
+
+
+  highScoreArray.push(userDataObj);
+  saveHighScores();
+
+  var highScoreData = loadHighScores();
+
+  if(highScoreData) {
+    highScoreData.sort(compare);
+  }
+
+  removeAllChildNodes(quizContainer);
+  removeAllChildNodes(highScorePage);
+
+  
+  var highScorePageContainer = document.createElement("div");
+  highScorePageContainer.className = "high-score-page-container";
+
+  var highScoreButtons = document.createElement("div");
+  highScoreButtons.className = "high-score-buttons";  
+
+  var highScoresHeading = document.createElement("h2");
+  highScoresHeading.innerHTML = "High scores";
+
+
+  var highScoreLists = document.createElement("ol");
+  highScoreLists.setAttribute("id", "id-high-score-lists")
+
+  for (var i =0; i < highScoreData.length; i++) {
+    var highScoreli = document.createElement("li");
+    highScoreli.innerHTML = highScoreData[i].userName + " - " +highScoreData[i].score;
+    highScoreLists.append(highScoreli);
+  }
+
+  var goBackBtn = document.createElement("button");
+  goBackBtn.className = "btn";
+  goBackBtn.innerText = "Go back";
+  goBackBtn.setAttribute("data-btn",GOBACK);
+
+  var clearHighScoresBtn = document.createElement("button");
+  clearHighScoresBtn.className =  "btn";
   clearHighScoresBtn.innerText = "Clear high scores";
   clearHighScoresBtn.setAttribute("data-btn",CLRHIGHSCORES);
 
 
-  highScorePage.insertBefore(highScoresHeading, highScorePage.firstChild);
-  highScorePage.append(highScoreLists);
+  
+
+  highScorePageContainer.insertBefore(highScoresHeading, highScorePageContainer.firstChild);
+  highScorePageContainer.append(highScoreLists);
   highScoreButtons.append(goBackBtn, clearHighScoresBtn);
-  highScorePage.append(highScoreButtons);
-  quizWrapper.append(highScorePage);
+  highScorePageContainer.append(highScoreButtons);
+  highScorePage.append(highScorePageContainer);
+  quizContainer.append(highScorePage);
 
   goBackBtn.addEventListener("click",btnHandler);
   clearHighScoresBtn.addEventListener("click",btnHandler);
 };
 function clearHighScore() {
+  localStorage.clear();
   var highscores = document.querySelector("#id-high-score-lists");
   removeAllChildNodes(highscores);
 };
@@ -237,6 +368,7 @@ function btnHandler(event) {
       getPages();
       break;
     case USERANSWERS:
+    
       userAnswerResultStatus = checkAnswer(userBtnAns);
       getPages();
       break;
@@ -244,6 +376,7 @@ function btnHandler(event) {
       getHighScorePage();
       break;
     case HIGHSCORES:
+      viewHighScore();
       break;
     case GOBACK:
       getStartPage();
@@ -257,4 +390,37 @@ function btnHandler(event) {
 }
 /** button handler*********************************************************** */
 
-startBtn.addEventListener("click",btnHandler);
+
+
+/******save high scores****************************** */
+function saveHighScores() {
+  localStorage.setItem("highScores", JSON.stringify(highScoreArray));
+  console.log("saved");
+};
+
+function loadHighScores() {
+  var savedHighScores = localStorage.getItem("highScores");
+  if(!savedHighScores) {
+    return false;
+  }
+  console.log("save tasks found!");
+
+  savedHighScores = JSON.parse(savedHighScores);
+  return savedHighScores;
+}
+
+function compare(a,b) {
+  var result = 0;
+  if (a.score < b.score) {
+    result = 1;
+  }
+  else {
+    result = -1;
+  }
+  return result;
+}
+
+
+// load the screen;
+window.onload = getStartPage();
+viewHighScoresBtn.addEventListener("click", btnHandler)
